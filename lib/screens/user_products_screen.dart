@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
@@ -12,13 +11,15 @@ class UserProductsScreen extends StatelessWidget {
   const UserProductsScreen({super.key});
 
   Future<void> _refreshProducts(BuildContext context) async {
-    await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final Products productProvider = Provider.of<Products>(context);
-    final List<Product> products = productProvider.products;
+    // final Products productProvider = Provider.of<Products>(context);
+    // final List<Product> products = productProvider.products;
+    print('rebuilding...');
 
     return Scaffold(
       appBar: AppBar(
@@ -33,23 +34,33 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProducts(context),
-        child: ListView.builder(
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                UserProductItem(
-                  id: products[index].id!,
-                  title: products[index].title,
-                  imageUrl: products[index].imageUrl,
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (context, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: () => _refreshProducts(context),
+                child: Consumer<Products>(
+                  builder: (context, productsData, child) => ListView.builder(
+                    itemCount: productsData.products.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          UserProductItem(
+                            id: productsData.products[index].id!,
+                            title: productsData.products[index].title,
+                            imageUrl: productsData.products[index].imageUrl,
+                          ),
+                          const Divider(),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-                const Divider(),
-              ],
-            );
-          },
-        ),
+              ),
       ),
     );
   }

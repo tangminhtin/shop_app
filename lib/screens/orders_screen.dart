@@ -28,7 +28,6 @@ class OrdersScreen extends StatelessWidget {
             );
           } else {
             if (dataSnapshot.error != null) {
-              print(dataSnapshot.error);
               return const Center(
                 child: Text('An error occurred!'),
               );
@@ -38,6 +37,7 @@ class OrdersScreen extends StatelessWidget {
                   itemCount: orderData.orders.length,
                   itemBuilder: (context, index) {
                     return OrderItem(
+                      key: ValueKey(orderData.orders[index].id),
                       order: orderData.orders[index],
                     );
                   },
