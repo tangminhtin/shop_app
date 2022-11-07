@@ -16,32 +16,60 @@ class ProductDetailScreen extends StatelessWidget {
         Provider.of<Products>(context, listen: false).findById(productId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
-      ),
-      body: Column(
-        children: [
-          Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-            height: 300,
-            width: double.infinity,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            '\$${product.price}',
-            style: const TextStyle(
-              fontSize: 25,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
+      // appBar: AppBar(
+      //   title: Text(product.title),
+      // ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 350,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              background: Hero(
+                tag: productId,
+                child: Image.network(
+                  product.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
-          const SizedBox(
-            height: 10,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '\$${product.price}',
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  width: double.infinity,
+                  child: Text(
+                    product.description,
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                  ),
+                ),
+              ],
+            ),
           ),
-          Text(product.description),
         ],
       ),
     );
